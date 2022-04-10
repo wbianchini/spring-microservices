@@ -1,5 +1,6 @@
 package com.wbianchini.customer;
 
+import com.wbianchini.amqp.RabbitMQMessageProducer;
 import com.wbianchini.clients.fraud.FraudCheckResponse;
 import com.wbianchini.clients.fraud.FraudClient;
 import com.wbianchini.clients.notification.NotificationClient;
@@ -12,7 +13,7 @@ public record CustomerService(
         CustomerRepository customerRepository,
         RestTemplate restTemplate,
         FraudClient fraudClient,
-        NotificationClient notificationClient
+        RabbitMQMessageProducer rabbitMQMessageProducer
 ) {
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
@@ -35,6 +36,11 @@ public record CustomerService(
                         customer.getFirstName())
         );
 
-        notificationClient.sendNotification(notificationRequest);
+        rabbitMQMessageProducer.publish(
+                notificationRequest,
+                "internal.exchange",
+                "internal.notification.routing-key"
+        );
+        //notificationClient.sendNotification(notificationRequest);
     }
 }
