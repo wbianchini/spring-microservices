@@ -1,4 +1,4 @@
-package com.wbianchini.fraud;
+package com.wbianchini.clients.fraud;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 }
