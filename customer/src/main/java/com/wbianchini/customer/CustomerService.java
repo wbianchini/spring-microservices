@@ -2,6 +2,8 @@ package com.wbianchini.customer;
 
 import com.wbianchini.clients.fraud.FraudCheckResponse;
 import com.wbianchini.clients.fraud.FraudClient;
+import com.wbianchini.clients.notification.NotificationClient;
+import com.wbianchini.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -9,7 +11,8 @@ import org.springframework.web.client.RestTemplate;
 public record CustomerService(
         CustomerRepository customerRepository,
         RestTemplate restTemplate,
-        FraudClient fraudClient
+        FraudClient fraudClient,
+        NotificationClient notificationClient
 ) {
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
@@ -24,5 +27,14 @@ public record CustomerService(
         if (fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("Customer is fraudulent");
         }
+
+        NotificationRequest notificationRequest = new NotificationRequest(
+                customer.getId(),
+                customer.getEmail(),
+                String.format("Hello %s, welcome to  our service",
+                        customer.getFirstName())
+        );
+
+        notificationClient.sendNotification(notificationRequest);
     }
 }
