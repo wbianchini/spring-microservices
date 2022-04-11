@@ -4,6 +4,7 @@ services:
 
   postgres:
     image: postgres
+    container_name: postgres
     environment:
       POSTGRES_USER: amigoscode
       POSTGRES_PASSWORD: password
@@ -47,6 +48,78 @@ services:
       - "15672:15672"
     networks:
       - spring
+
+  eureka-server:
+    image: wbianchini/eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - zipkin
+
+  apigw:
+    image: wbianchini/apigw
+    container_name: apigw
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - zipkin
+      - eureka-server
+
+  fraud:
+    image: wbianchini/fraud
+    container_name: fraud
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - postgres
+      - zipkin
+      - eureka-server
+
+  notifiction:
+    image: wbianchini/notification
+    container_name: notification
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - postgres
+      - zipkin
+      - rabbitmq
+      - eureka-server
+
+  customer:
+    image: wbianchini/customer
+    container_name: customer
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - postgres
+      - zipkin
+      - rabbitmq
+      - eureka-server
 
 networks:
   postgres:
