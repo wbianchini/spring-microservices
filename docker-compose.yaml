@@ -49,30 +49,30 @@ services:
     networks:
       - spring
 
-  eureka-server:
-    image: wbianchini/eureka-server
-    container_name: eureka-server
-    ports:
-      - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    networks:
-      - spring
-    depends_on:
-      - zipkin
-
-  apigw:
-    image: wbianchini/apigw
-    container_name: apigw
-    ports:
-      - "8083:8083"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    networks:
-      - spring
-    depends_on:
-      - zipkin
-      - eureka-server
+#  eureka-server:
+#    image: wbianchini/eureka-server
+#    container_name: eureka-server
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#    depends_on:
+#      - zipkin
+#
+#  apigw:
+#    image: wbianchini/apigw
+#    container_name: apigw
+#    ports:
+#      - "8083:8083"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#    depends_on:
+#      - zipkin
+#      - eureka-server
 
   fraud:
     image: wbianchini/fraud
@@ -87,7 +87,6 @@ services:
     depends_on:
       - postgres
       - zipkin
-      - eureka-server
 
   notifiction:
     image: wbianchini/notification
@@ -103,7 +102,6 @@ services:
       - postgres
       - zipkin
       - rabbitmq
-      - eureka-server
 
   customer:
     image: wbianchini/customer
@@ -119,7 +117,6 @@ services:
       - postgres
       - zipkin
       - rabbitmq
-      - eureka-server
 
 networks:
   postgres:
